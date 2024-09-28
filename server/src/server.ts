@@ -10,17 +10,43 @@ app.use(cors());
 
 const VIDEOS_DIR = 'E:\\Movie';
 
-app.get('/api/videos', (req: Request, res: Response) => {
-  fs.readdir(VIDEOS_DIR, (err, files) => {
-    if (err) {
-      return res.status(500).json({ error: 'Unable to scan directory' });
+interface FileInfo {
+  name: string;
+  isDirectory: boolean;
+  path: string;
+}
+
+function getFilesRecursively(dir: string): FileInfo[] {
+  const files = fs.readdirSync(dir);
+  let result: FileInfo[] = [];
+
+  files.forEach((file) => {
+    const filePath = path.join(dir, file);
+    const stat = fs.statSync(filePath);
+    const isDirectory = stat.isDirectory();
+    const relativePath = path.relative(VIDEOS_DIR, filePath);
+
+    if (isDirectory) {
+      result.push({ name: file, isDirectory: true, path: relativePath });
+      result = result.concat(getFilesRecursively(filePath));
+    } else if (['.mp4', '.avi', '.mkv'].includes(path.extname(file).toLowerCase())) {
+      result.push({ name: file, isDirectory: false, path: relativePath });
     }
-    const videos = files.filter(file => ['.mp4', '.avi', '.mkv'].includes(path.extname(file).toLowerCase()));
-    res.json(videos);
   });
+
+  return result;
+}
+
+app.get('/api/videos', (req: Request, res: Response) => {
+  try {
+    const files = getFilesRecursively(VIDEOS_DIR);
+    res.json(files);
+  } catch (error) {
+    res.status(500).json({ error: 'Unable to scan directory' });
+  }
 });
 
-app.get('/api/video/:filename', (req: Request, res: Response) => {
+app.get('/api/video/:filename(*)', (req: Request, res: Response) => {
   const filePath = path.join(VIDEOS_DIR, req.params.filename);
   const stat = fs.statSync(filePath);
   const fileSize = stat.size;
@@ -50,7 +76,7 @@ app.get('/api/video/:filename', (req: Request, res: Response) => {
   }
 });
 
-app.get('/api/download/:filename', (req: Request, res: Response) => {
+app.get('/api/download/:filename(*)', (req: Request, res: Response) => {
   const filePath = path.join(VIDEOS_DIR, req.params.filename);
   res.download(filePath);
 });
