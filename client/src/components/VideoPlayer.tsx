@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Typography, Button } from 'antd';
+import { Typography, Button, Card } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { API_BASE_URL } from '../config';
 
@@ -14,7 +14,7 @@ const VideoPlayer: React.FC = () => {
   }
 
   return (
-    <div>
+    <Card style={{ margin: '20px' }}>
       <Title level={2}>{decodeURIComponent(filename.split('\\').pop() || '')}</Title>
       <div style={{ marginBottom: 16 }}>
         <video style={{ width: '100%', maxHeight: '70vh' }} controls>
@@ -25,7 +25,7 @@ const VideoPlayer: React.FC = () => {
       <Button type="primary" icon={<ArrowLeftOutlined />}>
         <Link to="/">Back to Video List</Link>
       </Button>
-    </div>
+    </Card>
   );
 };
 

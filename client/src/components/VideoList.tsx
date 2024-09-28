@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { List, Typography, Button, Breadcrumb } from 'antd';
-import { FolderOutlined, FileOutlined, DownloadOutlined } from '@ant-design/icons';
+import { List, Typography, Breadcrumb } from 'antd';
+import { FolderOutlined, FileOutlined } from '@ant-design/icons';
 import { API_BASE_URL } from '../config';
 
 const { Title } = Typography;
@@ -63,20 +63,9 @@ const VideoList: React.FC = () => {
         itemLayout="horizontal"
         dataSource={getCurrentFiles()}
         renderItem={file => (
-          <List.Item
-            actions={[
-              file.isDirectory ? null : 
-                <Button 
-                  icon={<DownloadOutlined />} 
-                  href={`${API_BASE_URL}/api/download/${file.path}`}
-                  target="_blank"
-                >
-                  Download
-                </Button>
-            ]}
-          >
+          <List.Item key={file.path}>
             <List.Item.Meta
-              avatar={file.isDirectory ? <FolderOutlined /> : <FileOutlined />}
+              avatar={file.isDirectory ? <FolderOutlined style={{ fontSize: '24px' }} /> : <FileOutlined style={{ fontSize: '24px' }} />}
               title={
                 file.isDirectory ? 
                   <a onClick={() => handleFolderClick(file.name)}>{file.name}</a> : 
