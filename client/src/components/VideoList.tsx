@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { List, Typography, Breadcrumb } from 'antd';
-import { FolderOutlined, FileOutlined } from '@ant-design/icons';
+import { FolderFilled, VideoCameraFilled } from '@ant-design/icons';
 import { API_BASE_URL } from '../config';
 
 const { Title } = Typography;
@@ -12,6 +12,15 @@ interface FileInfo {
   isDirectory: boolean;
   path: string;
 }
+
+type RolePermissions = Record<'admin' | 'user' | 'guest' | 'everyone', string[]>;
+
+const permissions: RolePermissions = {
+    admin: ['read', 'write', 'delete'],
+    user: ['read', 'write'],
+    guest: ['read'],
+    everyone: ['read']
+};
 
 const VideoList: React.FC = () => {
   const [files, setFiles] = useState<FileInfo[]>([]);
@@ -65,7 +74,10 @@ const VideoList: React.FC = () => {
         renderItem={file => (
           <List.Item key={file.path}>
             <List.Item.Meta
-              avatar={file.isDirectory ? <FolderOutlined style={{ fontSize: '24px' }} /> : <FileOutlined style={{ fontSize: '24px' }} />}
+              avatar={file.isDirectory ? 
+                <FolderFilled style={{ fontSize: '24px', color: '#ffd700' }} /> : 
+                <VideoCameraFilled style={{ fontSize: '24px', color: '#ff4d4f' }} />
+              }
               title={
                 file.isDirectory ? 
                   <a onClick={() => handleFolderClick(file.name)}>{file.name}</a> : 
